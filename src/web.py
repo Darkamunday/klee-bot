@@ -14,7 +14,16 @@ OAUTH_TOKEN = "https://discord.com/api/oauth2/token"
 REDIRECT_URI = os.getenv("DISCORD_REDIRECT_URI", "http://127.0.0.1:5000/callback")
 CLIENT_ID = os.getenv("DISCORD_CLIENT_ID", "")
 CLIENT_SECRET = os.getenv("DISCORD_CLIENT_SECRET", "")
+OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
 ADMINISTRATOR = 0x8
+
+
+def _fetch_ollama_models() -> list[str]:
+    try:
+        resp = http.get(f"{OLLAMA_BASE_URL}/api/tags", timeout=3)
+        return [m["name"] for m in resp.json().get("models", [])]
+    except Exception:
+        return []
 
 
 def _is_admin_in_bot_guilds(user_guilds: list) -> bool:
@@ -167,16 +176,24 @@ TEMPLATE = """
       </div>
 
       <div id="tab-llm" class="tab-panel">
+        {% macro model_select(field_name, current) %}
+          <select name="{{ field_name }}">
+            {% set all_models = ([current] if current not in ollama_models else []) + ollama_models %}
+            {% for m in all_models %}
+              <option value="{{ m }}" {% if current == m %}selected{% endif %}>{{ m }}</option>
+            {% endfor %}
+          </select>
+        {% endmacro %}
         <label>Ollama model</label>
-        <input type="text" name="ollama_model" value="{{ cfg.ollama_model }}">
+        {{ model_select("ollama_model", cfg.ollama_model) }}
         <label>Inpaint model</label>
-        <input type="text" name="inpaint_model" value="{{ cfg.inpaint_model }}">
+        {{ model_select("inpaint_model", cfg.inpaint_model) }}
         <p class="muted">Used to extract mask subject and edit prompt — should be a local uncensored model</p>
         <label>Vision model</label>
-        <input type="text" name="vision_model" value="{{ cfg.vision_model }}">
+        {{ model_select("vision_model", cfg.vision_model) }}
         <p class="muted">Used for image description/analysis — must support vision (e.g. gemma3:12b, llava)</p>
         <label>NSFW image prompt model</label>
-        <input type="text" name="nsfw_image_model" value="{{ cfg.nsfw_image_model }}">
+        {{ model_select("nsfw_image_model", cfg.nsfw_image_model) }}
         <p class="muted">Used when "nsfw" is included in the message — must be an uncensored model</p>
         <label>Chat system prompt</label>
         <textarea name="chat_system_prompt">{{ cfg.chat_system_prompt }}</textarea>
@@ -438,6 +455,7 @@ def index():
         guild_channels=guild_channels,
         saved=saved,
         user=session["user"],
+        ollama_models=_fetch_ollama_models(),
     )
 
 

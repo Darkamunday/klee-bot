@@ -1,0 +1,26 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python *)",
+      "Bash(/c/Projects/discord-ai-bot/.venv/Scripts/pip install *)",
+      "Bash(git init *)",
+      "Bash(git add *)",
+      "Bash(git *)",
+      "Bash(gh repo *)",
+      "Bash(where gh *)",
+      "Bash(powershell -Command \"Get-Command gh | Select-Object -ExpandProperty Source\")",
+      "Bash(taskkill /F /IM python.exe)",
+      "Bash(.venv/Scripts/python.exe main.py)",
+      "Bash(taskkill /F /IM python3.exe)",
+      "Bash(tasklist)",
+      "Bash(powershell -Command \"Get-Process python | Stop-Process -Force\")",
+      "Bash(powershell -Command \"Start-Process -FilePath '.venv/Scripts/python.exe' -ArgumentList 'main.py' -WorkingDirectory 'C:\\\\Projects\\\\discord-ai-bot' -WindowStyle Hidden\")",
+      "WebSearch",
+      "Bash(gh api *)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(pkill -f \"python.*main.py\")",
+      "Bash(robocopy \"C:\\\\Projects\\\\discord-ai-bot\" \"C:\\\\Projects\\\\klee-bot\" /E /XD .venv __pycache__ .git /XF .env config.json inpaint_debug.log)",
+      "PowerShell(robocopy \"C:\\\\Projects\\\\discord-ai-bot\" \"C:\\\\Projects\\\\klee-bot\" /E /XD \".venv\" \"__pycache__\" \".git\" /XF \".env\" \"config.json\" \"inpaint_debug.log\"; Write-Host \"Exit: $LASTEXITCODE\")"
+    ]
+  }
+}

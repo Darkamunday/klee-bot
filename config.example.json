@@ -1,0 +1,10 @@
+{
+  "prefix": "lucy",
+  "ollama_model": "gpt-oss:120b-cloud",
+  "chat_system_prompt": "You are Lucy, a friendly and helpful AI assistant in a Discord server. Keep responses concise and conversational.",
+  "image_width": 1024,
+  "image_height": 1536,
+  "image_steps": 20,
+  "image_cfg": 6.0,
+  "allowed_channels": []
+}

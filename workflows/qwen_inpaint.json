@@ -1,0 +1,170 @@
+{
+  "93": {
+    "inputs": {
+      "unet_name": "QWEN\\Qwen-Image-Edit\\qwen_image_edit_2509_fp8mixed.safetensors",
+      "weight_dtype": "default"
+    },
+    "class_type": "UNETLoader",
+    "_meta": { "title": "Load Diffusion Model" }
+  },
+  "94": {
+    "inputs": {
+      "clip_name": "QWEN\\Qwen2.5_VL\\qwen_2.5_vl_7b_fp8_scaled.safetensors",
+      "type": "qwen_image",
+      "device": "default"
+    },
+    "class_type": "CLIPLoader",
+    "_meta": { "title": "Load CLIP" }
+  },
+  "57": {
+    "inputs": {
+      "vae_name": "QWEN\\qwen_image_vae.safetensors"
+    },
+    "class_type": "VAELoader",
+    "_meta": { "title": "Load VAE" }
+  },
+  "54": {
+    "inputs": {
+      "PowerLoraLoaderHeaderWidget": { "type": "PowerLoraLoaderHeaderWidget" },
+      "lora_1": {
+        "on": true,
+        "lora": "QWEN\\Qwen-Image-Edit\\Qwen-Image-Edit-2509-Lightning-8steps-V1.0-fp32.safetensors",
+        "strength": 1
+      },
+      "➕ Add Lora": "",
+      "model": ["93", 0],
+      "clip": ["94", 0]
+    },
+    "class_type": "Power Lora Loader (rgthree)",
+    "_meta": { "title": "Power Lora Loader" }
+  },
+  "101": {
+    "inputs": {
+      "image": "",
+      "upload": "image"
+    },
+    "class_type": "LoadImage",
+    "_meta": { "title": "Load Image" }
+  },
+  "200": {
+    "inputs": { "model_name": "GroundingDINO_SwinT_OGC (694MB)" },
+    "class_type": "GroundingDinoModelLoader (segment anything)",
+    "_meta": { "title": "GroundingDINO Loader" }
+  },
+  "201": {
+    "inputs": { "model_name": "sam_vit_h (2.56GB)" },
+    "class_type": "SAMModelLoader (segment anything)",
+    "_meta": { "title": "SAM Loader" }
+  },
+  "202": {
+    "inputs": {
+      "sam_model": ["201", 0],
+      "grounding_dino_model": ["200", 0],
+      "image": ["101", 0],
+      "prompt": "",
+      "threshold": 0.05
+    },
+    "class_type": "GroundingDinoSAMSegment (segment anything)",
+    "_meta": { "title": "GroundingDINO SAM Segment" }
+  },
+  "28": {
+    "inputs": {
+      "expand": 15,
+      "incremental_expandrate": 0,
+      "tapered_corners": false,
+      "flip_input": false,
+      "blur_radius": 2,
+      "lerp_alpha": 1,
+      "decay_factor": 1,
+      "fill_holes": false,
+      "mask": ["202", 1]
+    },
+    "class_type": "GrowMaskWithBlur",
+    "_meta": { "title": "Grow Mask With Blur" }
+  },
+  "53": {
+    "inputs": {
+      "prompt": "",
+      "clip": ["54", 1],
+      "image1": ["101", 0]
+    },
+    "class_type": "TextEncodeQwenImageEditPlus",
+    "_meta": { "title": "TextEncodeQwenImageEditPlus" }
+  },
+  "20": {
+    "inputs": {
+      "pixels": ["101", 0],
+      "vae": ["57", 0]
+    },
+    "class_type": "VAEEncode",
+    "_meta": { "title": "VAE Encode" }
+  },
+  "22": {
+    "inputs": {
+      "samples": ["20", 0],
+      "mask": ["28", 0]
+    },
+    "class_type": "SetLatentNoiseMask",
+    "_meta": { "title": "Set Latent Noise Mask" }
+  },
+  "21": {
+    "inputs": {
+      "conditioning": ["53", 0],
+      "latent": ["22", 0]
+    },
+    "class_type": "ReferenceLatent",
+    "_meta": { "title": "ReferenceLatent" }
+  },
+  "23": {
+    "inputs": {
+      "shift": 3,
+      "model": ["54", 0]
+    },
+    "class_type": "ModelSamplingAuraFlow",
+    "_meta": { "title": "ModelSamplingAuraFlow" }
+  },
+  "43": {
+    "inputs": {
+      "seed": 163263055840374,
+      "steps": 8,
+      "cfg": 1,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "denoise": 1,
+      "model": ["23", 0],
+      "positive": ["21", 0],
+      "negative": ["21", 0],
+      "latent_image": ["22", 0]
+    },
+    "class_type": "KSampler",
+    "_meta": { "title": "KSampler" }
+  },
+  "19": {
+    "inputs": {
+      "samples": ["43", 0],
+      "vae": ["57", 0]
+    },
+    "class_type": "VAEDecode",
+    "_meta": { "title": "VAE Decode" }
+  },
+  "24": {
+    "inputs": {
+      "x": 0,
+      "y": 0,
+      "resize_source": false,
+      "destination": ["101", 0],
+      "source": ["19", 0],
+      "mask": ["28", 0]
+    },
+    "class_type": "ImageCompositeMasked",
+    "_meta": { "title": "ImageCompositeMasked" }
+  },
+  "45": {
+    "inputs": {
+      "filename_prefix": "ComfyUI",
+      "images": ["24", 0]
+    },
+    "class_type": "SaveImage",
+    "_meta": { "title": "Save Image" }
+  }
+}

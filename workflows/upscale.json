@@ -1,0 +1,92 @@
+{
+  "571": {
+    "class_type": "LoadImage",
+    "inputs": {
+      "image": "input.png",
+      "upload": "image"
+    }
+  },
+  "584": {
+    "class_type": "GetImageSize+",
+    "inputs": {
+      "image": ["571", 0]
+    }
+  },
+  "181": {
+    "class_type": "ImageResizeKJv2",
+    "inputs": {
+      "image": ["571", 0],
+      "mask": ["571", 1],
+      "width": ["584", 0],
+      "height": ["584", 1],
+      "upscale_method": "nearest-exact",
+      "keep_proportion": "stretch",
+      "pad_color": "0, 0, 0",
+      "crop_position": "center",
+      "divisible_by": 2,
+      "device": "cpu"
+    }
+  },
+  "184": {
+    "class_type": "JoinImageWithAlpha",
+    "inputs": {
+      "image": ["181", 0],
+      "alpha": ["181", 3]
+    }
+  },
+  "182": {
+    "class_type": "SeedVR2LoadDiTModel",
+    "inputs": {
+      "model": "seedvr2_ema_7b_sharp_fp16.safetensors",
+      "device": "cuda:0",
+      "blocks_to_swap": 0,
+      "swap_io_components": false,
+      "offload_device": "none",
+      "cache_model": false,
+      "attention_mode": "sageattn_2"
+    }
+  },
+  "183": {
+    "class_type": "SeedVR2LoadVAEModel",
+    "inputs": {
+      "model": "ema_vae_fp16.safetensors",
+      "device": "cuda:0",
+      "encode_tiled": false,
+      "encode_tile_size": 1024,
+      "encode_tile_overlap": 128,
+      "decode_tiled": false,
+      "decode_tile_size": 1024,
+      "decode_tile_overlap": 128,
+      "tile_debug": "false",
+      "offload_device": "none",
+      "cache_model": false
+    }
+  },
+  "185": {
+    "class_type": "SeedVR2VideoUpscaler",
+    "inputs": {
+      "image": ["184", 0],
+      "dit": ["182", 0],
+      "vae": ["183", 0],
+      "seed": 0,
+      "resolution": 2048,
+      "max_resolution": 0,
+      "batch_size": 1,
+      "uniform_batch_size": false,
+      "color_correction": "lab",
+      "temporal_overlap": 0,
+      "prepend_frames": 0,
+      "input_noise_scale": 0,
+      "latent_noise_scale": 0,
+      "offload_device": "cpu",
+      "enable_debug": false
+    }
+  },
+  "186": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": ["185", 0],
+      "filename_prefix": "upscale"
+    }
+  }
+}

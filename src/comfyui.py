@@ -44,7 +44,13 @@ def generate_image(prompt: str, guild_id: int) -> bytes:
     cfg = config.load(guild_id)
     model = cfg.get("txt2img_model", "juggernaut")
 
-    if model == "flux2_klein":
+    if model == "qwen_lora":
+        workflow = _get_workflow("qwen_lora_t2i.json")
+        workflow["87"]["inputs"]["text"] = prompt
+        workflow["91"]["inputs"]["seed"] = random.randint(0, 2**32 - 1)
+        workflow["141:138"]["inputs"]["width"] = cfg["image_width"]
+        workflow["141:138"]["inputs"]["height"] = cfg["image_height"]
+    elif model == "flux2_klein":
         workflow = _get_workflow("flux2_t2i.json")
         workflow["76"]["inputs"]["value"] = prompt
         workflow["77:88"]["inputs"]["value"] = cfg["image_width"]

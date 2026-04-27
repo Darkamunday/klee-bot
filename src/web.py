@@ -202,7 +202,7 @@ TEMPLATE = """
       <div id="tab-imggen" class="tab-panel">
         <label>Model</label>
         <select name="txt2img_model" id="model-select" onchange="updateModelFields()">
-          {% for val, label in [("flux2_klein", "FLUX.2 Klein"), ("juggernaut", "Juggernaut XL"), ("flux_schnell", "FLUX.1 Schnell"), ("flux_dev", "FLUX.1 Dev")] %}
+          {% for val, label in [("qwen_lora", "Qwen Image LoRA"), ("flux2_klein", "FLUX.2 Klein"), ("juggernaut", "Juggernaut XL"), ("flux_schnell", "FLUX.1 Schnell"), ("flux_dev", "FLUX.1 Dev")] %}
             <option value="{{ val }}" {% if cfg.txt2img_model == val %}selected{% endif %}>{{ label }}</option>
           {% endfor %}
         </select>
